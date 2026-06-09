@@ -1,149 +1,183 @@
-# Enterprise Network Design and Security Implementation using Cisco Packet Tracer
+# 🌐 Enterprise Network Design and Security Implementation using Cisco Packet Tracer
 
-## Overview
+## 📖 Project Overview
 
-This project demonstrates the design, configuration, and security implementation of a small enterprise network in Cisco Packet Tracer. The network was built by subnetting a Class C network into multiple LANs and implementing essential networking services such as DHCP, Static Routing, Access Control Lists (ACLs), and Port Address Translation (PAT).
+This project demonstrates the design, configuration, and security implementation of a small enterprise network using **Cisco Packet Tracer**. The network was developed by subnetting a Class C address space into multiple LAN segments and implementing essential networking services including **DHCP**, **Static Routing**, **Access Control Lists (ACLs)**, and **Port Address Translation (PAT)**.
 
-The objective was to create a secure and functional network where internal users can communicate according to organizational policies while restricting unauthorized access.
-
----
-
-## Network Topology
-
-The network consists of:
-
-* 1 Floor Router (Router0)
-* 1 ISP Router (Router1)
-* 3 LAN Segments
-* DHCP-enabled client PCs
-* Static-addressed secure department PCs
-* WAN connection between Floor Router and ISP Router
+The primary goal of this project was to build a secure, scalable, and efficient enterprise network that enables controlled communication between departments while preventing unauthorized access.
 
 ---
 
-## IP Addressing Scheme
+## 🏗️ Network Topology
 
-Base Network:
+The network infrastructure consists of:
+
+* **1 Floor Router (Router0)**
+* **1 ISP Router (Router1)**
+* **3 LAN Segments**
+* **DHCP-enabled Client PCs**
+* **Static IP Department PCs**
+* **WAN Connection between Router0 and Router1**
+
+### Topology Highlights
+
+* Separate subnet for each department
+* Dynamic IP allocation through DHCP
+* Secure department protected by ACLs
+* Internet connectivity through NAT/PAT
+* Restricted inbound access from external networks
+
+---
+
+## 🌍 IP Addressing Scheme
+
+### Base Network
 
 ```text
 10.123.23.0/24
 ```
 
-Subnetted into three /26 networks:
+### Subnet Allocation
 
-| Network Segment | Network Address  | Subnet Mask     |
-| --------------- | ---------------- | --------------- |
-| LAN 01          | 10.123.23.0/26   | 255.255.255.192 |
-| LAN 02          | 10.123.23.64/26  | 255.255.255.192 |
-| LAN 03          | 10.123.23.128/26 | 255.255.255.192 |
-| WAN Link        | 201.115.2.0/30   | 255.255.255.252 |
+| Network Segment | Network Address | CIDR | Subnet Mask     |
+| --------------- | --------------- | ---- | --------------- |
+| LAN 01          | 10.123.23.0     | /26  | 255.255.255.192 |
+| LAN 02          | 10.123.23.64    | /26  | 255.255.255.192 |
+| LAN 03          | 10.123.23.128   | /26  | 255.255.255.192 |
+| WAN Link        | 201.115.2.0     | /30  | 255.255.255.252 |
 
-### Router Interfaces
+### Router Interface Configuration
 
-| Interface  | IP Address    |
-| ---------- | ------------- |
-| G0/0       | 10.123.23.1   |
-| G0/1       | 10.123.23.65  |
-| G0/2       | 10.123.23.129 |
-| S0/0/0     | 201.115.2.1   |
-| ISP S0/0/0 | 201.115.2.2   |
+| Device        | Interface | IP Address    |
+| ------------- | --------- | ------------- |
+| Router0       | G0/0      | 10.123.23.1   |
+| Router0       | G0/1      | 10.123.23.65  |
+| Router0       | G0/2      | 10.123.23.129 |
+| Router0       | S0/0/0    | 201.115.2.1   |
+| Router1 (ISP) | S0/0/0    | 201.115.2.2   |
 
 ---
 
-## Features Implemented
+# ⚙️ Features Implemented
 
-### 1. Subnetting
+## 1️⃣ Network Subnetting
 
-* Divided a /24 network into multiple /26 subnets.
-* Each subnet supports up to 62 usable hosts.
-* Designed separate broadcast domains for different departments.
+The original `/24` network was divided into three `/26` subnets to create separate broadcast domains for different departments.
 
-### 2. DHCP Configuration
+### Benefits
 
-Router0 acts as the DHCP server.
+* Improved network organization
+* Reduced broadcast traffic
+* Enhanced security and management
+* Up to **62 usable hosts** per subnet
 
-Implemented DHCP pools for:
+---
+
+## 2️⃣ DHCP Configuration
+
+**Router0** functions as the DHCP server for dynamic host configuration.
+
+### DHCP Pools Configured
 
 * LAN 01
 * LAN 02
 
-Automatically assigns:
+### Automatically Assigned Parameters
 
 * IP Address
 * Subnet Mask
 * Default Gateway
 
-LAN 03 uses static IP addressing.
+### Static Addressing
 
-### 3. Static Routing
+LAN 03 devices use manually configured static IP addresses for enhanced control and security.
 
-Configured a default route on Router0 to forward unknown traffic toward the ISP Router.
+---
+
+## 3️⃣ Static Routing
+
+A default route was configured on Router0 to forward all unknown traffic toward the ISP router.
+
+### Configuration
 
 ```bash
 ip route 0.0.0.0 0.0.0.0 201.115.2.2
 ```
 
-### 4. Access Control Lists (ACLs)
+### Purpose
 
-Implemented network security using Standard ACLs.
+* Enables external connectivity
+* Simplifies routing configuration
+* Directs internet-bound traffic to the ISP
 
-#### Internal Security
+---
 
-Protected LAN 03 from unauthorized access.
+## 4️⃣ Access Control Lists (ACLs)
 
-Blocked:
+Standard ACLs were implemented to enforce internal and external security policies.
 
-* LAN 01 → LAN 03
-* LAN 02 → LAN 03
+### 🔒 Internal Security Policy
 
-Allowed:
+Protected the secure department (LAN 03) from unauthorized access.
 
-* LAN 01 ↔ LAN 02 communication
+#### Blocked Traffic
 
-#### External Security
+* LAN 01 ➜ LAN 03
+* LAN 02 ➜ LAN 03
 
-Blocked traffic initiated from the ISP Router toward internal private networks.
+#### Allowed Traffic
 
-Allowed:
+* LAN 01 ↔ LAN 02
 
-* Internal hosts to access external networks
+### 🌐 External Security Policy
 
-Blocked:
+Prevented external devices from initiating communication with internal hosts.
 
-* External hosts from accessing internal devices
+#### Allowed
 
-### 5. Port Address Translation (PAT)
+* Internal hosts accessing external networks
 
-Configured NAT Overload to allow multiple internal hosts to share a single public IP address.
+#### Blocked
 
-PAT was implemented using:
+* ISP Router accessing private LAN resources
+
+---
+
+## 5️⃣ Port Address Translation (PAT)
+
+PAT (NAT Overload) was configured to allow multiple internal hosts to share a single public IP address.
+
+### Configuration
 
 ```bash
 ip nat inside source list 1 interface Serial0/0/0 overload
 ```
 
-Benefits:
+### Advantages
 
-* Conserves public IP addresses
-* Allows internal users to communicate externally
-* Hides private network addresses
+* Conserves public IPv4 addresses
+* Enables internet access for all internal hosts
+* Hides private IP addresses from external networks
+* Enhances network security
 
 ---
 
-## Verification and Testing
+# 🧪 Verification & Testing
 
-The following connectivity tests were performed:
+The following connectivity tests were conducted to validate network functionality and security policies.
 
-| Test                      | Expected Result |
+| Test Scenario             | Expected Result |
 | ------------------------- | --------------- |
-| PC0 → PC1                 | Success         |
-| PC1 → PC0                 | Success         |
-| PC0 → PC2                 | Blocked         |
-| PC1 → PC2                 | Blocked         |
-| PC0 → ISP Router          | Success         |
-| ISP Router → Internal PCs | Blocked         |
+| PC0 → PC1                 | ✅ Success       |
+| PC1 → PC0                 | ✅ Success       |
+| PC0 → PC2                 | ❌ Blocked       |
+| PC1 → PC2                 | ❌ Blocked       |
+| PC0 → ISP Router          | ✅ Success       |
+| ISP Router → Internal PCs | ❌ Blocked       |
 
-Additional verification commands:
+---
+
+## 🔍 Verification Commands
 
 ```bash
 show ip interface brief
@@ -153,38 +187,74 @@ show ip dhcp binding
 show ip nat translations
 ```
 
----
+These commands were used to verify:
 
-## Technologies Used
-
-* Cisco Packet Tracer
-* IPv4 Addressing
-* Subnetting
-* DHCP
-* Static Routing
-* Standard ACL
-* NAT
-* PAT (NAT Overload)
-* Cisco IOS CLI
+* Interface status
+* Routing table entries
+* ACL functionality
+* DHCP address assignments
+* NAT/PAT translations
 
 ---
 
-## Learning Outcomes
+# 🛠️ Technologies Used
 
-Through this project I gained hands-on experience with:
+| Technology          | Purpose               |
+| ------------------- | --------------------- |
+| Cisco Packet Tracer | Network Simulation    |
+| IPv4 Addressing     | Network Communication |
+| Subnetting          | Network Segmentation  |
+| DHCP                | Dynamic IP Allocation |
+| Static Routing      | Traffic Forwarding    |
+| Standard ACLs       | Access Control        |
+| NAT                 | Address Translation   |
+| PAT (NAT Overload)  | Internet Connectivity |
+| Cisco IOS CLI       | Device Configuration  |
 
-* Network design and subnet planning
-* Router interface configuration
-* DHCP deployment
-* Static routing
-* Access Control Lists (ACLs)
-* Network Address Translation (NAT/PAT)
+---
+
+# 🎯 Learning Outcomes
+
+This project provided practical experience in:
+
+* Enterprise network design
+* IP subnet planning and implementation
+* Router and interface configuration
+* DHCP deployment and management
+* Static routing configuration
+* Access Control List (ACL) implementation
+* NAT and PAT configuration
 * Network troubleshooting and verification
+* Network security policy enforcement
 
 ---
 
-## Author
+# 🚀 Project Objectives Achieved
 
-Student ID: 0112230123
-MD. SIAM AFROZ TANMOY
-Course Project – Computer Networks Laboratory
+✅ Network segmentation through subnetting
+
+✅ Dynamic IP assignment using DHCP
+
+✅ Secure communication policies using ACLs
+
+✅ Internet connectivity through NAT/PAT
+
+✅ Protection against unauthorized external access
+
+✅ Successful verification of all network services
+
+---
+
+# 👨‍💻 Author
+
+**MD. Siam Afroz Tanmoy**
+
+**Student ID:** 0112230123
+
+**Course:** Computer Networks Laboratory
+
+**Project:** Enterprise Network Design and Security Implementation using Cisco Packet Tracer
+
+---
+
+> This project demonstrates the practical implementation of core networking concepts including subnetting, routing, DHCP, ACLs, and NAT/PAT in a simulated enterprise environment using Cisco Packet Tracer.
